@@ -3,39 +3,58 @@ using System;
 using VRDataLib.Data;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.UI;
 
 // This script is a simple example of how an interactive item can
 // be used to change things on gameobjects by handling events.
 public class InteractiveSceneItem : MonoBehaviour
 {
-	
-	public VRInteractiveItem m_InteractiveItem;
-	public Renderer m_Renderer;
+	#region InitAttributes
 
+	/// A reference to an instance of VRInteractive Item required by the InteractiveSceneItem object
+	private VRInteractiveItem m_InteractiveItem;
+
+	/// The referenced renderer of the interactive scene item.
+	private Renderer m_Renderer;
+
+	/// The data arguments for the transfer of VR user data.
 	private Dictionary<string, string> args;
 
+	///Object material in the default state.
 	public Material m_defaultMat;
+
+	///Material for when object is looked at.
 	public Material m_overMat;
 
-	private bool 
-	isLooking 	= false, 
-	isPOI 		= false;
+	#endregion InitAttributes
+
+	#region LookAtParams
+
+	private bool
+	enableLookatScale 	= false,
+	isLooking 			= false, 
+	isPOI 				= false;
 
 	public static float FOCUS_TIME = 0.75f;
 	private float lookAtTime;
 
-	private Vector3 scl;
+	private Vector3 initialScale;
 
+	#endregion LookAtParams
 
 	void Start()
 	{
 		
+		m_InteractiveItem = new VRInteractiveItem();
+		m_Renderer = this.GetComponent<MeshRenderer> ();
+		Debug.Log (m_Renderer);
+
 		m_InteractiveItem.OnOver += HandleOver;
 		m_InteractiveItem.OnOut += HandleOut;
 		m_InteractiveItem.OnClick += HandleClick;
 		m_InteractiveItem.OnDoubleClick += HandleDoubleClick;
 
-		scl = this.transform.localScale;
+		initialScale = this.transform.localScale;
 
 		m_Renderer.material = m_defaultMat;
 
@@ -58,13 +77,17 @@ public class InteractiveSceneItem : MonoBehaviour
 	{
 		m_Renderer.material = m_overMat;
 
+		if (enableLookatScale) {
+
+			this.transform.localScale = this.transform.localScale * 1.15f;
+
+		}
+
 		Debug.Log ("Over");
 
 		if (VRData.canLook) {
 
 			isLooking = true;
-
-			//this.transform.localScale = this.transform.localScale * 1.15f;
 
 			StartCoroutine (letFocus());
 
@@ -96,7 +119,7 @@ public class InteractiveSceneItem : MonoBehaviour
 	//Handle the Out event
 	public void HandleOut()
 	{
-		this.transform.localScale = scl;
+		this.transform.localScale = initialScale;
 
 		m_Renderer.material = m_defaultMat;
 

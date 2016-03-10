@@ -63,6 +63,7 @@
      <Compile Include="Assets\VR_Kit\Scripts\Camera\VRInput.cs" />
      <Compile Include="Assets\VR_Kit\Scripts\Camera\VRInteractiveItem.cs" />
      <Compile Include="Assets\VR_Kit\Scripts\Camera\VRTrackingReset.cs" />
+     <Compile Include="Assets\VR_Kit\Scripts\MeshMerger.cs" />
      <Compile Include="Assets\VR_Kit\Scripts\Objects\InteractiveSceneItem.cs" />
      <None Include="Assets\VR_Kit\Shaders\UIOverlay.shader" />
      <None Include="Assets\VR_Kit\Shaders\Outlined Diffuse.shader" />
