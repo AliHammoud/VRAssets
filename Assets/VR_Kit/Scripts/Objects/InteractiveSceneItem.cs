@@ -26,12 +26,16 @@ public class InteractiveSceneItem : MonoBehaviour
 	///Material for when object is looked at.
 	public Material m_overMat;
 
+	///Decides the type of the tooltip for the object
+	public enum tooltip {none, ui, world};
+	public tooltip tooltipType;
+
 	#endregion InitAttributes
 
 	#region LookAtParams
 
 	private bool
-	enableLookatScale 	= false,
+	enableLookatScale 	= true,
 	isLooking 			= false, 
 	isPOI 				= false;
 
@@ -44,15 +48,15 @@ public class InteractiveSceneItem : MonoBehaviour
 
 	void Start()
 	{
-		
-		m_InteractiveItem = new VRInteractiveItem();
-		m_Renderer = this.GetComponent<MeshRenderer> ();
-		Debug.Log (m_Renderer);
 
-		m_InteractiveItem.OnOver += HandleOver;
-		m_InteractiveItem.OnOut += HandleOut;
-		m_InteractiveItem.OnClick += HandleClick;
-		m_InteractiveItem.OnDoubleClick += HandleDoubleClick;
+		m_InteractiveItem = this.GetComponent<VRInteractiveItem>();
+		m_Renderer = this.GetComponent<MeshRenderer> ();
+
+		//Subscribe to events
+		m_InteractiveItem.OnOver 			+= HandleOver;
+		m_InteractiveItem.OnOut 			+= HandleOut;
+		m_InteractiveItem.OnClick 			+= HandleClick;
+		m_InteractiveItem.OnDoubleClick 	+= HandleDoubleClick;
 
 		initialScale = this.transform.localScale;
 
@@ -60,14 +64,13 @@ public class InteractiveSceneItem : MonoBehaviour
 
 	}
 
-
 	public void OnDisable()
 	{
 		
-		m_InteractiveItem.OnOver -= HandleOver;
-		m_InteractiveItem.OnOut -= HandleOut;
-		m_InteractiveItem.OnClick -= HandleClick;
-		m_InteractiveItem.OnDoubleClick -= HandleDoubleClick;
+		m_InteractiveItem.OnOver 			-= HandleOver;
+		m_InteractiveItem.OnOut 			-= HandleOut;
+		m_InteractiveItem.OnClick 			-= HandleClick;
+		m_InteractiveItem.OnDoubleClick 	-= HandleDoubleClick;
 
 	}
 
@@ -82,8 +85,6 @@ public class InteractiveSceneItem : MonoBehaviour
 			this.transform.localScale = this.transform.localScale * 1.15f;
 
 		}
-
-		Debug.Log ("Over");
 
 		if (VRData.canLook) {
 
@@ -143,7 +144,7 @@ public class InteractiveSceneItem : MonoBehaviour
 			//Create a new data object
 			//working
 			//VRDataObject obj = new VRDataObject ("A", this.GetComponent<Transform>(), args);
-			//experiment
+			//experiment (shorthand)
 			new VRDataObject ("A", this.GetComponent<Transform>(), args);
 
 		}
@@ -153,7 +154,6 @@ public class InteractiveSceneItem : MonoBehaviour
 
 	}
 
-
 	//Handle the Click event
 	public void HandleClick()
 	{
@@ -161,7 +161,6 @@ public class InteractiveSceneItem : MonoBehaviour
 		Debug.Log("Show click state");
 
 	}
-
 
 	//Handle the DoubleClick event
 	public void HandleDoubleClick()
