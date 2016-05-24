@@ -9,8 +9,11 @@ using System.Collections.Generic;
 public class InteractiveSceneItem : MonoBehaviour
 {
 	
-	public VRInteractiveItem m_InteractiveItem;
-	public Renderer m_Renderer;
+	private VRInteractiveItem m_InteractiveItem;
+	private Renderer m_Renderer;
+
+    private Material defaultMat;
+    public Material hoverMat;
 
 	private Dictionary<string, string> args;
 
@@ -23,11 +26,18 @@ public class InteractiveSceneItem : MonoBehaviour
 
 	private Vector3 scl;
 
+    void Awake()
+    {
+        m_InteractiveItem = this.GetComponent<VRInteractiveItem>();
+        m_Renderer = this.GetComponent<MeshRenderer>();
+    }
 
 	void Start()
 	{
-		
-		m_InteractiveItem.OnOver += HandleOver;
+
+        defaultMat = this.m_Renderer.material;
+
+        m_InteractiveItem.OnOver += HandleOver;
 		m_InteractiveItem.OnOut += HandleOut;
 		m_InteractiveItem.OnClick += HandleClick;
 		m_InteractiveItem.OnDoubleClick += HandleDoubleClick;
@@ -56,7 +66,9 @@ public class InteractiveSceneItem : MonoBehaviour
 
 			isLooking = true;
 
-			this.transform.localScale = this.transform.localScale * 1.15f;
+			transform.localScale = this.transform.localScale * 1.15f;
+            m_Renderer.material = hoverMat;
+            Debug.Log("looking at " + this.name);
 
 			StartCoroutine (letFocus());
 
@@ -88,7 +100,8 @@ public class InteractiveSceneItem : MonoBehaviour
 	//Handle the Out event
 	public void HandleOut()
 	{
-		this.transform.localScale = scl;
+		transform.localScale = scl;
+        m_Renderer.material = defaultMat;
 
 		if (isPOI) {
 
