@@ -22,7 +22,6 @@ public class VRInput : MonoBehaviour
 	public SwipeDirection swipe;
 	public GameObject cam;
 	public float speed = 0.05f;
-	private float m_DeltaTime;
 
 	public event Action<SwipeDirection> OnSwipe;                // Called every frame passing in the swipe, including if there is no swipe.
 	public event Action OnClick;                                // Called when Fire1 is released and it's not a double click.
@@ -53,17 +52,13 @@ public class VRInput : MonoBehaviour
 
 	private void Update()
 	{
-
-		m_DeltaTime += (Time.deltaTime - m_DeltaTime) * 0.1f;
-		float fps = 1.0f / m_DeltaTime;
-
 		CheckInput();
 
 		log.text = swipe.ToString ();
 
 		if(swipe == SwipeDirection.LEFT) {
 
-			cam.transform.Translate (this.transform.forward * speed * Time.fixedDeltaTime / fps);
+			cam.transform.Translate (this.transform.forward * speed);
 
 		}
 

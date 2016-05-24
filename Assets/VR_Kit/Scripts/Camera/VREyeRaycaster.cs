@@ -22,7 +22,6 @@ public class VREyeRaycaster : MonoBehaviour
 
 	private VRInteractiveItem m_CurrentInteractible;                //The current interactive item
 	private VRInteractiveItem m_LastInteractible;                   //The last interactive item
-	private GameObject m_interactibleObj;							 //The last interactive item (cast as object)
 
 
 	// Utility for other classes to get the current interactive item
@@ -74,38 +73,9 @@ public class VREyeRaycaster : MonoBehaviour
 			VRInteractiveItem interactible = hit.collider.GetComponent<VRInteractiveItem>(); //attempt to get the VRInteractiveItem on the hit object
 			m_CurrentInteractible = interactible;
 
-			GameObject interactibleObj = hit.collider.gameObject;
-
 			// If we hit an interactive item and it's not the same as the last interactive item, then call Over
-			if (interactible && interactible != m_LastInteractible) {
-
-				m_interactibleObj = interactibleObj;
-				interactible.Over();
-
-				//Check for the type of tooltip the object has (if any), then show it
-				int tType = (int)m_interactibleObj.GetComponent<InteractiveSceneItem> ().tooltipType;
-
-				switch (tType) {
-
-				case(1):
-
-					this.GetComponent<VRCameraUI> ().ShowTooltipUI (interactibleObj);
-					break;
-
-				case (2):
-
-					Vector3 x = 
-						interactibleObj
-						.GetComponent<MeshFilter> ()
-						.sharedMesh.bounds
-						.ClosestPoint (transform.position);
-
-					this.GetComponent<VRCameraUI> ().ShowTooltipWorld (interactibleObj.transform.position);
-					break;
-
-				}
-
-			} 
+			if (interactible && interactible != m_LastInteractible)
+				interactible.Over(); 
 
 			// Deactive the last interactive item 
 			if (interactible != m_LastInteractible)
@@ -135,42 +105,11 @@ public class VREyeRaycaster : MonoBehaviour
 
 	private void DeactiveLastInteractible()
 	{
-
-		//Debug.Log (m_interactibleObj);
-
 		if (m_LastInteractible == null)
 			return;
 
 		m_LastInteractible.Out();
 		m_LastInteractible = null;
-
-		if (m_interactibleObj == null)
-			return;
-		
-		if (m_interactibleObj != null) {
-
-			//Check for the type of tooltip the object has (if any), then hide it
-			int tType = (int)m_interactibleObj.GetComponent<InteractiveSceneItem> ().tooltipType;
-
-			switch (tType) {
-
-			case(1):
-
-				this.GetComponent<VRCameraUI> ().HideTooltipUI ();
-				break;
-
-			case (2):
-
-				this.GetComponent<VRCameraUI> ().HideTooltipWorld ();
-				break;
-
-			}
-
-
-		}
-
-		m_interactibleObj = null;
-
 	}
 
 

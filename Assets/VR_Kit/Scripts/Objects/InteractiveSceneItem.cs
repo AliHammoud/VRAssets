@@ -3,74 +3,47 @@ using System;
 using VRDataLib.Data;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine.UI;
 
 // This script is a simple example of how an interactive item can
 // be used to change things on gameobjects by handling events.
 public class InteractiveSceneItem : MonoBehaviour
 {
-	#region InitAttributes
+	
+	public VRInteractiveItem m_InteractiveItem;
+	public Renderer m_Renderer;
 
-	/// A reference to an instance of VRInteractive Item required by the InteractiveSceneItem object
-	private VRInteractiveItem m_InteractiveItem;
-
-	/// The referenced renderer of the interactive scene item.
-	private Renderer m_Renderer;
-
-	/// The data arguments for the transfer of VR user data.
 	private Dictionary<string, string> args;
 
-	///Object material in the default state.
-	public Material m_defaultMat;
-
-	///Material for when object is looked at.
-	public Material m_overMat;
-
-	///Decides the type of the tooltip for the object
-	public enum tooltip {none, ui, world};
-	public tooltip tooltipType;
-
-	#endregion InitAttributes
-
-	#region LookAtParams
-
-	private bool
-	enableLookatScale 	= true,
-	isLooking 			= false, 
-	isPOI 				= false;
+	private bool 
+	isLooking 	= false, 
+	isPOI 		= false;
 
 	public static float FOCUS_TIME = 0.75f;
 	private float lookAtTime;
 
-	private Vector3 initialScale;
+	private Vector3 scl;
 
-	#endregion LookAtParams
 
 	void Start()
 	{
+		
+		m_InteractiveItem.OnOver += HandleOver;
+		m_InteractiveItem.OnOut += HandleOut;
+		m_InteractiveItem.OnClick += HandleClick;
+		m_InteractiveItem.OnDoubleClick += HandleDoubleClick;
 
-		m_InteractiveItem = this.GetComponent<VRInteractiveItem>();
-		m_Renderer = this.GetComponent<MeshRenderer> ();
-
-		//Subscribe to events
-		m_InteractiveItem.OnOver 			+= HandleOver;
-		m_InteractiveItem.OnOut 			+= HandleOut;
-		m_InteractiveItem.OnClick 			+= HandleClick;
-		m_InteractiveItem.OnDoubleClick 	+= HandleDoubleClick;
-
-		initialScale = this.transform.localScale;
-
-		m_Renderer.material = m_defaultMat;
+		scl = this.transform.localScale;
 
 	}
+
 
 	public void OnDisable()
 	{
 		
-		m_InteractiveItem.OnOver 			-= HandleOver;
-		m_InteractiveItem.OnOut 			-= HandleOut;
-		m_InteractiveItem.OnClick 			-= HandleClick;
-		m_InteractiveItem.OnDoubleClick 	-= HandleDoubleClick;
+		m_InteractiveItem.OnOver -= HandleOver;
+		m_InteractiveItem.OnOut -= HandleOut;
+		m_InteractiveItem.OnClick -= HandleClick;
+		m_InteractiveItem.OnDoubleClick -= HandleDoubleClick;
 
 	}
 
@@ -78,17 +51,12 @@ public class InteractiveSceneItem : MonoBehaviour
 	//Handle the Over event
 	public void HandleOver()
 	{
-		m_Renderer.material = m_overMat;
-
-		if (enableLookatScale) {
-
-			this.transform.localScale = this.transform.localScale * 1.15f;
-
-		}
 
 		if (VRData.canLook) {
 
 			isLooking = true;
+
+			this.transform.localScale = this.transform.localScale * 1.15f;
 
 			StartCoroutine (letFocus());
 
@@ -120,9 +88,7 @@ public class InteractiveSceneItem : MonoBehaviour
 	//Handle the Out event
 	public void HandleOut()
 	{
-		this.transform.localScale = initialScale;
-
-		m_Renderer.material = m_defaultMat;
+		this.transform.localScale = scl;
 
 		if (isPOI) {
 
@@ -144,7 +110,7 @@ public class InteractiveSceneItem : MonoBehaviour
 			//Create a new data object
 			//working
 			//VRDataObject obj = new VRDataObject ("A", this.GetComponent<Transform>(), args);
-			//experiment (shorthand)
+			//experiment
 			new VRDataObject ("A", this.GetComponent<Transform>(), args);
 
 		}
@@ -154,6 +120,7 @@ public class InteractiveSceneItem : MonoBehaviour
 
 	}
 
+
 	//Handle the Click event
 	public void HandleClick()
 	{
@@ -161,6 +128,7 @@ public class InteractiveSceneItem : MonoBehaviour
 		Debug.Log("Show click state");
 
 	}
+
 
 	//Handle the DoubleClick event
 	public void HandleDoubleClick()
